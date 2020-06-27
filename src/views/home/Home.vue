@@ -3,8 +3,22 @@
     <nav-bar class="home-nav">
       <h3 slot="center">123</h3>
     </nav-bar>
-    <app-swiper :banner="banner" />
-    <app-rmd :recommend="recommend" />
+
+    <app-scroll
+      class="content"
+      ref="scroll"
+      :probeType="3"
+      @scroll="contentScroll"
+      :pullUpLoad="true"
+      @pullingUp="load"
+    >
+      <app-swiper :banner="banner" />
+      <app-rmd :recommend="recommend" />
+      <app-weekpop />
+      <app-tabControl :title="['流行', '新款', '精选']" class="tabFixed" @tabclick="tabclick" />
+      <app-goodlist :goods="goods[current].list" />
+    </app-scroll>
+    <app-backTop @click.native="backtop" v-show="isShow" />
   </div>
 </template>
 
@@ -18,35 +32,135 @@ import homeswiper from "./Child/Homeswiper";
 //添加推荐模块
 import recommend from "./Child/recommend";
 
+//添加每周流行模块
+import weekpop from "./Child/weekpop";
+
+//添加菜单选项卡模块
+import tabControl from "components/content/tabControl/tabControl";
+
+//添加商品列表模块
+import goodlist from "components/goods/goodlist";
+
 //获取network/home axios请求
-import { getHomeData } from "network/home";
+import { getHomeData, getGoods } from "network/home";
+//引入封装better-scroll
+import Scroll from "components/common/scroll/Scroll";
+//引入backto(返回顶部)按钮
+import backTop from "components/content/backTop/backTop";
+
 export default {
   name: "Home",
   components: {
     NavBar,
     "app-swiper": homeswiper,
-    "app-rmd": recommend
+    "app-rmd": recommend,
+    "app-weekpop": weekpop,
+    "app-tabControl": tabControl,
+    "app-goodlist": goodlist,
+    "app-scroll": Scroll,
+    "app-backTop": backTop
   },
   data() {
     return {
       banner: [],
-      recommend: []
+      recommend: [],
+      goods: {
+        pop: { page: 0, list: [] },
+        new: { page: 0, list: [] },
+        sell: { page: 0, list: [] }
+      },
+      current: "pop",
+      isShow: false
     };
   },
   created() {
-    getHomeData().then(res => {
-      console.log(res);
+    this.HomeData();
+    this.HomeGoods("pop");
+    this.HomeGoods("new");
+    this.HomeGoods("sell");
+  },
+  methods: {
+    //home上拉加载更多
+    load() {
+      this.HomeGoods(this.current);
+      this.$refs.scroll.scroll.refresh();
+    },
+    //home滚动事件
+    contentScroll(position) {
+      //判断标签是佛显示
+      // console.log(position.y);
 
-      this.banner = res.data.data.banner.list;
-      this.recommend = res.data.data.recommend.list;
-    });
+      this.isShow = -position.y > 1000;
+    },
+    //tab栏事件监听
+    tabclick(index) {
+      switch (index) {
+        case 0:
+          this.current = "pop";
+          break;
+        case 1:
+          this.current = "new";
+          break;
+        case 2:
+          this.current = "sell";
+          break;
+      }
+    },
+    //backtop监听 点击回到y0
+    backtop() {
+      this.$refs.scroll.scrollTo(0, 0);
+      // console.log(this.$refs.scroll);
+    },
+    //网络
+    //封装home的数据请求
+    HomeData() {
+      getHomeData().then(res => {
+        // console.log(res);
+
+        this.banner = res.data.data.banner.list;
+        this.recommend = res.data.data.recommend.list;
+      });
+    },
+    //封装goods的数据请求 接收实参（type）
+    HomeGoods(type) {
+      const page = this.goods[type].page + 1;
+      getGoods(type, page).then(res => {
+        // console.log(res.data.data.list);
+
+        this.goods[type].list.push(...res.data.data.list);
+        this.goods[type].page += 1;
+        //调用better-scroll finishPullUp() 以便多次上拉加载
+        this.$refs.scroll.scroll.finishPullUp();
+      });
+    }
   }
 };
 </script>
 
 <style scoped>
+#home {
+  padding-top: 44px;
+  height: 100vh;
+  position: relative;
+}
 .home-nav {
   background-color: pink;
   color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9;
+}
+.tabFixed {
+  position: sticky;
+  top: 44px;
+  z-index: 9;
+}
+.content {
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  overflow: hidden;
 }
 </style>
