@@ -33,6 +33,8 @@ export default {
       pullUpLoad: this.pullUpLoad,
       click: true
     });
+    // console.log(this.scroll);
+
     //监听滚动事件
     this.scroll.on("scroll", position => {
       // console.log(position);

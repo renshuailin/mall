@@ -4,6 +4,15 @@
       <h3 slot="center">123</h3>
     </nav-bar>
 
+    <!-- 做一个假的tabcontrol -->
+    <app-tabControl
+      :title="['流行', '新款', '精选']"
+      @tabclick="tabclick"
+      ref="faketabControl"
+      class="fakeTab"
+      v-show="isTabFixed"
+    />
+
     <app-scroll
       class="content"
       ref="scroll"
@@ -12,10 +21,15 @@
       :pullUpLoad="true"
       @pullingUp="load"
     >
-      <app-swiper :banner="banner" />
+      <app-swiper :banner="banner" @swiperImgLoad="swiperImgLoad" />
       <app-rmd :recommend="recommend" />
       <app-weekpop />
-      <app-tabControl :title="['流行', '新款', '精选']" class="tabFixed" @tabclick="tabclick" />
+      <app-tabControl
+        :title="['流行', '新款', '精选']"
+        @tabclick="tabclick"
+        ref="tabControl"
+        :class="{fixed:isTabFixed}"
+      />
       <app-goodlist :goods="goods[current].list" />
     </app-scroll>
     <app-backTop @click.native="backtop" v-show="isShow" />
@@ -70,7 +84,10 @@ export default {
         sell: { page: 0, list: [] }
       },
       current: "pop",
-      isShow: false
+      isShow: false,
+      taboffsetTop: 0,
+      isTabFixed: false,
+      saveY: 0
     };
   },
   created() {
@@ -79,18 +96,35 @@ export default {
     this.HomeGoods("new");
     this.HomeGoods("sell");
   },
+  mounted() {
+    //获取tabcontrol组件元素
+
+    //监听img加载完成
+    this.$bus.$on("itemImgLoad", () => {
+      // console.log(321321);
+      //
+      this.$refs.scroll.scroll.refresh();
+    });
+  },
   methods: {
+    //监听轮播图加载
+    swiperImgLoad() {
+      this.taboffsetTop = this.$refs.tabControl.$el.offsetTop;
+    },
+
     //home上拉加载更多
     load() {
       this.HomeGoods(this.current);
-      this.$refs.scroll.scroll.refresh();
+      // this.$refs.scroll.scroll.refresh();
     },
     //home滚动事件
     contentScroll(position) {
       //判断标签是佛显示
       // console.log(position.y);
-
       this.isShow = -position.y > 1000;
+
+      //判断tabControl是否吸顶
+      this.isTabFixed = -position.y > this.taboffsetTop;
     },
     //tab栏事件监听
     tabclick(index) {
@@ -105,6 +139,8 @@ export default {
           this.current = "sell";
           break;
       }
+      this.$refs.tabControl.currentIndex = index;
+      this.$refs.faketabControl.currentIndex = index;
     },
     //backtop监听 点击回到y0
     backtop() {
@@ -133,28 +169,41 @@ export default {
         this.$refs.scroll.scroll.finishPullUp();
       });
     }
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
+    this.$refs.scroll.scroll.refresh();
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y;
+    console.log(this.saveY);
   }
 };
 </script>
 
 <style scoped>
 #home {
-  padding-top: 44px;
+  /* padding-top: 44px; */
   height: 100vh;
   position: relative;
 }
 .home-nav {
   background-color: pink;
   color: #fff;
-  position: fixed;
+  /* position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9;
+  z-index: 9; */
 }
-.tabFixed {
-  position: sticky;
+/* .fixed {
+  position: fixed;
   top: 44px;
+  left: 0;
+  right: 0;
+} */
+.fakeTab {
+  position: relative;
   z-index: 9;
 }
 .content {

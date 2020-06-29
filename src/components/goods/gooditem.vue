@@ -1,6 +1,6 @@
 <template>
-  <div class="gooditem">
-    <img :src="gooditem.show.img" alt />
+  <div class="gooditem" @click="itemclick">
+    <img :src="gooditem.show.img" @load="imgLoad" />
     <div class="goodinfo">
       <p>{{gooditem.title}}</p>
       <span class="price">￥{{gooditem.price}}</span>
@@ -15,11 +15,22 @@ export default {
     gooditem: {
       type: Object
     }
+  },
+  methods: {
+    imgLoad() {
+      // console.log("123");
+      //发出一个bus事件
+      this.$bus.$emit("itemImgLoad");
+    },
+    itemclick() {
+      this.$router.push("/detail/" + this.gooditem.iid);
+    }
   }
 };
 </script>
 <style scoped>
 .gooditem {
+  padding: 10px 0;
   padding-bottom: 40px;
   position: relative;
   width: 45%;
