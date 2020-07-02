@@ -28,7 +28,7 @@
         :title="['流行', '新款', '精选']"
         @tabclick="tabclick"
         ref="tabControl"
-        :class="{fixed:isTabFixed}"
+        :class="{ fixed: isTabFixed }"
       />
       <app-goodlist :goods="goods[current].list" />
     </app-scroll>
@@ -59,9 +59,8 @@ import goodlist from "components/goods/goodlist";
 import { getHomeData, getGoods } from "network/home";
 //引入封装better-scroll
 import Scroll from "components/common/scroll/Scroll";
-//引入backto(返回顶部)按钮
-import backTop from "components/content/backTop/backTop";
-
+//引入[mixin]backto(返回顶部)按钮
+import { backtoTop } from "common/mixin";
 export default {
   name: "Home",
   components: {
@@ -71,9 +70,9 @@ export default {
     "app-weekpop": weekpop,
     "app-tabControl": tabControl,
     "app-goodlist": goodlist,
-    "app-scroll": Scroll,
-    "app-backTop": backTop
+    "app-scroll": Scroll
   },
+  mixins: [backtoTop],
   data() {
     return {
       banner: [],
@@ -84,7 +83,7 @@ export default {
         sell: { page: 0, list: [] }
       },
       current: "pop",
-      isShow: false,
+
       taboffsetTop: 0,
       isTabFixed: false,
       saveY: 0
@@ -98,7 +97,6 @@ export default {
   },
   mounted() {
     //获取tabcontrol组件元素
-
     //监听img加载完成
     this.$bus.$on("itemImgLoad", () => {
       // console.log(321321);
@@ -143,10 +141,7 @@ export default {
       this.$refs.faketabControl.currentIndex = index;
     },
     //backtop监听 点击回到y0
-    backtop() {
-      this.$refs.scroll.scrollTo(0, 0);
-      // console.log(this.$refs.scroll);
-    },
+
     //网络
     //封装home的数据请求
     HomeData() {
@@ -175,7 +170,11 @@ export default {
     this.$refs.scroll.scroll.refresh();
   },
   deactivated() {
-    this.saveY = this.$refs.scroll.scroll.y;
+    this.saveY = this.$refs.scroll.currentY();
+    //取消事件
+    this.$bus.$off("itemImgLoad", () => {
+      this.$refs.scroll.scroll.refresh();
+    });
     console.log(this.saveY);
   }
 };

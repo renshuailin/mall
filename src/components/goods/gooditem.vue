@@ -1,10 +1,10 @@
 <template>
   <div class="gooditem" @click="itemclick">
-    <img :src="gooditem.show.img" @load="imgLoad" />
+    <img :src="check" @load="imgLoad" />
     <div class="goodinfo">
-      <p>{{gooditem.title}}</p>
-      <span class="price">￥{{gooditem.price}}</span>
-      <span class="collection">{{gooditem.cfav}}</span>
+      <p>{{ gooditem.title }}</p>
+      <span class="price">￥{{ gooditem.price }}</span>
+      <span class="collection">{{ gooditem.cfav }}</span>
     </div>
   </div>
 </template>
@@ -13,8 +13,13 @@ export default {
   name: "gooditem",
   props: {
     gooditem: {
-      type: Object
-    }
+      type: Object,
+    },
+  },
+  computed: {
+    check() {
+      return this.gooditem.image || this.gooditem.show.img;
+    },
   },
   methods: {
     imgLoad() {
@@ -24,8 +29,8 @@ export default {
     },
     itemclick() {
       this.$router.push("/detail/" + this.gooditem.iid);
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

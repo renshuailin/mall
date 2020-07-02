@@ -9,7 +9,15 @@ export function getDetailData(iid) {
     }
   })
 }
-//整合多个数据
+
+//推荐
+export function getRecommend() {
+  return request({
+    url: '/recommend',
+  })
+}
+
+//整合多个数据 价格
 export class DetailGood {
   constructor(itemInfo, columns, services) {
     this.title = itemInfo.title
@@ -22,6 +30,7 @@ export class DetailGood {
     this.lowNowPrice = itemInfo.lowNowPrice
   }
 }
+//详情
 export class DetailShop {
   constructor(shopInfo) {
     this.logo = shopInfo.shopLogo
@@ -32,6 +41,7 @@ export class DetailShop {
     this.count = shopInfo.cGoods
   }
 }
+//尺寸
 export class DetailParam {
   constructor(info, rule) {
     this.image = info.image ? info.image[0] : ''

@@ -51,7 +51,10 @@ export default {
   methods: {
     //封装scrollTo方法 参数由home提供
     scrollTo(x, y, time = 1000) {
-      this.scroll.scrollTo(x, y, time);
+      this.scroll && this.scroll.scrollTo(x, y, time);
+    },
+    currentY() {
+      return this.scroll.y ? this.scroll.y : 0;
     }
   }
 };

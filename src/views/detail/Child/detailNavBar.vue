@@ -1,15 +1,17 @@
 <template>
   <app-navbar>
     <div slot="left" @click="back">
-      <img src="../../../assets/img/common/back.svg" alt />
+      <img src="~assets/img/common/back.svg" />
     </div>
     <div slot="center" class="title">
       <div
-        v-for="(item,index) in title"
+        v-for="(item, index) in title"
         :key="index"
-        :class="{active:index===currenIndex}"
+        :class="{ active: index === currenIndex }"
         @click="titleClick(index)"
-      >{{item}}</div>
+      >
+        {{ item }}
+      </div>
     </div>
   </app-navbar>
 </template>
@@ -20,20 +22,21 @@ export default {
   data() {
     return {
       title: ["商品", "参数", "评论", "推荐"],
-      currenIndex: 0
+      currenIndex: 0,
     };
   },
   components: {
-    "app-navbar": NavBar
+    "app-navbar": NavBar,
   },
   methods: {
     titleClick(index) {
       this.currenIndex = index;
+      this.$emit("titleClick", index);
     },
     back() {
       this.$router.go(-1);
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
