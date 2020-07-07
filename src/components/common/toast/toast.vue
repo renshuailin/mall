@@ -24,9 +24,10 @@ export default {
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
   transform: translateX(-50%);
-  padding: 10px 20px;
+  padding: 10px 10px;
   border-radius: 5px;
   top: 50%;
   left: 50%;
+  white-space: nowrap;
 }
 </style>

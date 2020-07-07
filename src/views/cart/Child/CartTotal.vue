@@ -2,11 +2,7 @@
   <div class="total">
     <div class="check">
       <div class="checkAll">
-        <app-CheckButtom
-          class="checkBtn"
-          :isActive="isSetectAll"
-          @click.native="checkClick"
-        />
+        <app-CheckButtom class="checkBtn" :isActive="isSetectAll" @click.native="checkClick" />
         <span>全选</span>
       </div>
       <div class="total">合计:￥{{ totalPrice }}</div>
@@ -20,36 +16,36 @@ import { mapGetters } from "vuex";
 export default {
   name: "CartTotal",
   components: {
-    "app-CheckButtom": CheckButtom,
+    "app-CheckButtom": CheckButtom
   },
   computed: {
     ...mapGetters(["cartList"]),
     totalPrice() {
       //过滤
       return this.cartList
-        .filter((item) => item.checked)
+        .filter(item => item.checked)
         .reduce((value, item) => value + item.count * item.price, 0)
         .toFixed(2);
     },
     totalLength() {
-      return this.cartList.filter((item) => item.checked).length;
+      return this.cartList.filter(item => item.checked).length;
     },
     isSetectAll() {
       if (this.cartList.length === 0) {
         return false;
       }
-      return !this.cartList.filter((item) => !item.checked).length;
-    },
+      return !this.cartList.filter(item => !item.checked).length;
+    }
   },
   methods: {
     checkClick() {
       if (this.isSetectAll) {
-        this.cartList.forEach((item) => (item.checked = false));
+        this.cartList.forEach(item => (item.checked = false));
       } else {
-        this.cartList.forEach((item) => (item.checked = true));
+        this.cartList.forEach(item => (item.checked = true));
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>
@@ -75,7 +71,8 @@ export default {
   width: 90px;
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  justify-content: center;
+  /* margin-left: 10px; */
 }
 .checkBtn {
   margin-right: 5px;
@@ -86,7 +83,7 @@ export default {
   display: flex;
 }
 .total {
-  padding: 0 20px;
+  padding: 0 10px;
   /* */
   /* flex: 1; */
   /* width: 200px; */
