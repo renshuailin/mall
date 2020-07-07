@@ -12,6 +12,7 @@
     </app-Scroll>
     <app-backTop @click.native="backtop" v-show="isShow" />
     <app-detailCart @detailCart="detailCart" />
+    <app-toast :msg="msg" :isShow="show" />
   </div>
 </template>
 <script>
@@ -48,6 +49,9 @@ import Scroll from "components/common/scroll/Scroll";
 //引入底部购物车
 import detailCart from "./Child/detailCart";
 
+//
+import toast from "components/common/toast/toast";
+
 //引入mixin
 import { itemMixin, backtoTop } from "common/mixin";
 export default {
@@ -69,7 +73,11 @@ export default {
       //点击滚动
       themeTop: [],
       //保存滚动y值
-      positionY: 0
+      positionY: 0,
+      //toast文字
+      msg: "",
+      //toast显示
+      show: false
     };
   },
   mixins: [itemMixin, backtoTop],
@@ -83,7 +91,8 @@ export default {
     "app-detailParam": detailParam,
     "app-detailComments": detailComments,
     "app-goodlist": goodlist,
-    "app-detailCart": detailCart
+    "app-detailCart": detailCart,
+    "app-toast": toast
   },
   created() {
     // console.log(123);
@@ -147,7 +156,13 @@ export default {
       product.price = this.Goods.lowNowPrice;
       product.id = this.id;
 
-      this.$store.dispatch("addCart", product);
+      this.$store.dispatch("addCart", product).then(res => {
+        this.msg = res;
+        this.show = true;
+        setTimeout(() => {
+          this.show = false;
+        }, 1000);
+      });
       // console.log(product);
     },
     imageLoad() {

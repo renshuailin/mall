@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav">
-      <h3 slot="center">123</h3>
+      <h3 slot="center">首页</h3>
     </nav-bar>
 
     <!-- 做一个假的tabcontrol -->

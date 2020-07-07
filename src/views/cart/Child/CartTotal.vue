@@ -2,11 +2,15 @@
   <div class="total">
     <div class="check">
       <div class="checkAll">
-        <app-CheckButtom class="checkBtn" />
+        <app-CheckButtom
+          class="checkBtn"
+          :isActive="isSetectAll"
+          @click.native="checkClick"
+        />
         <span>全选</span>
       </div>
-      <div class="total">合计:￥{{totalPrice}}</div>
-      <div class="settlement">结算({{totalLength}})</div>
+      <div class="total">合计:￥{{ totalPrice }}</div>
+      <div class="settlement">结算({{ totalLength }})</div>
     </div>
   </div>
 </template>
@@ -16,21 +20,36 @@ import { mapGetters } from "vuex";
 export default {
   name: "CartTotal",
   components: {
-    "app-CheckButtom": CheckButtom
+    "app-CheckButtom": CheckButtom,
   },
   computed: {
     ...mapGetters(["cartList"]),
     totalPrice() {
       //过滤
       return this.cartList
-        .filter(item => item.checked)
+        .filter((item) => item.checked)
         .reduce((value, item) => value + item.count * item.price, 0)
         .toFixed(2);
     },
     totalLength() {
-      return this.cartList.filter(item => item.checked).length;
-    }
-  }
+      return this.cartList.filter((item) => item.checked).length;
+    },
+    isSetectAll() {
+      if (this.cartList.length === 0) {
+        return false;
+      }
+      return !this.cartList.filter((item) => !item.checked).length;
+    },
+  },
+  methods: {
+    checkClick() {
+      if (this.isSetectAll) {
+        this.cartList.forEach((item) => (item.checked = false));
+      } else {
+        this.cartList.forEach((item) => (item.checked = true));
+      }
+    },
+  },
 };
 </script>
 <style scoped>
@@ -56,10 +75,10 @@ export default {
   width: 90px;
   display: flex;
   align-items: center;
-  margin-left: 30px;
+  margin-left: 10px;
 }
 .checkBtn {
-  margin-right: 10px;
+  margin-right: 5px;
   width: 20px;
   height: 20px;
   padding-left: 1px;
